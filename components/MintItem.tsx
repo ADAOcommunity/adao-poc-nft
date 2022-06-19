@@ -1,23 +1,15 @@
-import UseSketchModal from "./SketchModal"
+import mint from "../mint"
+import UseNftModal from "./NftMintModal"
+import { MintItemProps } from "../types"
 
-export type Example = {
-  pictureSrc: string
-}
-
-export type MintItem = {
-  name: string
-  description: { line1: string, line2: string, line3: string },
-  examples: { example1: Example, example2: Example }
-  CTA: { name: string, action: () => any | null, link: string | null }
-}
-export default function MintItem(props: { left: boolean }) {
-  const id = `${Math.random()}-mint-item`
-  const id2 = `${Math.random()}-mint-item`
+export default function MintItem(props: MintItemProps) {
+  const id = `${Math.random()}-${props.name}-mint-item`
+  const id2 = `${Math.random()}-${props.name}-mint-item`
   return (
     <div className="max-w-screen-xl px-4 py-12 mx-auto sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:items-stretch">
 
-        {props.left ? <ItemInfoBlock /> : <></>}
+        {props.left ? <ItemInfoBlock mintItem={props} /> : <></>}
         <div className="grid grid-cols-2 gap-4 md:col-span-2 md:py-12">
           <div
             className="block"
@@ -26,17 +18,9 @@ export default function MintItem(props: { left: boolean }) {
               <img
                 loading="lazy"
                 id={`${id}`}
-                alt="Simple Watch"
+                alt={props.name+1}
                 className="object-cover rounded"
-                src="/squareIds/squareIdExample1.png"
-                onMouseEnter={() => {
-                  (document.getElementById(id) as HTMLImageElement).src = '/squareIds/squareIdExample1.gif'
-                }
-                }
-                onMouseLeave={() => {
-                  (document.getElementById(id) as HTMLImageElement).src = '/squareIds/squareIdExample1.png'
-                }
-                }
+                src={props.examples.example1.pictureSrc}
               />
             </div>
           </div>
@@ -48,49 +32,40 @@ export default function MintItem(props: { left: boolean }) {
               <img
                 loading="lazy"
                 id={`${id2}`}
-                alt="SquareId"
+                alt={props.name+2}
                 className="object-cover rounded"
-                src="/squareIds/squareIdExample2.png"
-                onMouseEnter={() => {
-                  (document.getElementById(id2) as HTMLImageElement).src = '/squareIds/squareIdExample2.gif'
-                }
-                }
-                onMouseLeave={() => {
-                  (document.getElementById(id2) as HTMLImageElement).src = '/squareIds/squareIdExample2.png'
-                }
-                }
+                src={props.examples.example2.pictureSrc}
               />
             </div>
           </div>
 
         </div>
-        {!props.left ? <ItemInfoBlock /> : <></>}
+        {!props.left ? <ItemInfoBlock mintItem={props} /> : <></>}
       </div>
     </div>
   )
 }
 
-function ItemInfoBlock() {
-  const { modalHtml, showSketchModal } = UseSketchModal({ sketchLoader: () => import('../sketches/squaresSketch') })
+function ItemInfoBlock(props:{mintItem: MintItemProps}) {
+  const { modalHtml, showNftModal } = UseNftModal({collectionName: props.mintItem.name})
   return (
     <>
       <div className="flex items-center p-8 bg-gray-100 dark:bg-gray-600 rounded">
         <div className="mx-auto text-center lg:text-left dark:text-white">
           <h2 className="text-2xl font-bold">
-            Square ID
+            {props.mintItem.author}
           </h2>
 
           <p className="mt-8 text-base text-gray-700 dark:text-gray-50 max-w-[45ch]">
-            The first collection of most probably series by DZ, audio-visual and interactive!
-            <br />It uses your wallet address as input to create a seed for pseudo randomness, meaning each NFT is unique to you.
-            <br />(use different wallets for multiple NFTs)
+            {props.mintItem.description.line1}<br/>
+            {props.mintItem.description.line2}<br/>
+            {props.mintItem.description.line3}<br/>
           </p>
-
           
-          <p className="mt-3">Price: ₳15</p>
+          <p className="mt-3">Price: ₳{mint.nftAdaPrice}</p>
           <button
             onClick={() => {
-              showSketchModal(true)
+              showNftModal(true)
             }}
             className="inline-block px-8 py-3 mb-9 mt-6 text-lg font-semibold rounded hover:scale-110 hover:rotate-2 bg-gray-800 text-gray-50 dark:bg-gray-50 dark:text-gray-800"
           >

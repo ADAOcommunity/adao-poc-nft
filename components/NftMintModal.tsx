@@ -1,19 +1,15 @@
 import { Button, Modal } from "flowbite-react";
 import { C, toHex } from "lucid-cardano";
-import dynamic, { Loader } from "next/dynamic";
 import { useState } from "react";
-import { createLockingPolicyScript, mintTx } from "../utils/cardano";
+import { mintTx } from "../utils/cardano";
 import initializeLucid from "../utils/lucid";
 import { useStoreState } from "../utils/store";
 import mintinfo from "../mint";
 
-export default function UseSketchModal(props: { sketchLoader: Loader<{ address: string }> }) {
-    const [show, showSketchModal] = useState<boolean>(false)
+export default function UseNftModal(props: {collectionName: string}) {
+    const [show, showNftModal] = useState<boolean>(false)
     const walletStore = useStoreState(state => state.wallet)
-    const P5Sketch = dynamic(props.sketchLoader,
-        { ssr: false }
-    );
-
+   
     async function mint(data: any, fileSrc: string | RegExpMatchArray, signTx: (txCbor: any) => Promise<any>) {
         const policy =  {policyId: mintinfo.policyId,policyScript:C.NativeScript.from_bytes(Buffer.from(mintinfo.script, 'hex'))}
         
@@ -40,8 +36,7 @@ export default function UseSketchModal(props: { sketchLoader: Loader<{ address: 
         console.log(sig)
         if (sig && sTx) {
             try {
-
-                const rawResponse = await fetch(`/api/submit`, {
+                const rawResponse = await fetch(`/api/submit/${props.collectionName}`, {
                     method: 'POST',
                     headers: {
                     'Accept': 'application/json',
@@ -75,7 +70,7 @@ export default function UseSketchModal(props: { sketchLoader: Loader<{ address: 
             popup={true}
             key={`sketch${Math.random()}`}
             size="5xl"
-            onClose={() => showSketchModal(false)}
+            onClose={() => showNftModal(false)}
         >
             <Modal.Header />
             <Modal.Body className="text-center">
@@ -85,7 +80,7 @@ export default function UseSketchModal(props: { sketchLoader: Loader<{ address: 
                             Your sketch
                         </h3>
                         <div className="flex justify-center content-center flex-col ">
-                            <P5Sketch address={walletStore.address} />
+                            {/* <P5Sketch address={walletStore.address} /> */}
                         </div>
                         <p className="mb-5 font-normal text-gray-500 dark:text-gray-400">
                             *Click and hold to play*
@@ -109,7 +104,7 @@ export default function UseSketchModal(props: { sketchLoader: Loader<{ address: 
                             </Button>
                             <Button
                                 color="alternative"
-                                onClick={() => showSketchModal(false)}
+                                onClick={() => showNftModal(false)}
                             >
                                 Cancel
                             </Button>
@@ -117,12 +112,12 @@ export default function UseSketchModal(props: { sketchLoader: Loader<{ address: 
                     </>
                     : <>
                         <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                            Connect a Cardano wallet to generate a sketch. Your address is used as a seed for pseudorandomness.
+                            Connect a Cardano wallet to mint the NFT
                         </h3>
                         <div className="flex justify-end gap-4 pt-4">
                             <Button
                                 color="alternative"
-                                onClick={() => showSketchModal(false)}
+                                onClick={() => showNftModal(false)}
                             >
                                 Cancel
                             </Button>
@@ -133,5 +128,5 @@ export default function UseSketchModal(props: { sketchLoader: Loader<{ address: 
         </Modal>
     </>
 
-    return { modalHtml, showSketchModal }
+    return { modalHtml, showNftModal }
 }

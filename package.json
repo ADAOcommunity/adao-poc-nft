@@ -16,12 +16,9 @@
     "flowbite-react": "^0.0.25",
     "lucid-cardano": "^0.3.0",
     "next": "^12.1.2",
-    "p5": "^1.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-icons": "^4.3.1",
-    "tone": "^14.7.77",
-    "total-serialism": "^2.1.4"
+    "react-icons": "^4.3.1"
   },
   "devDependencies": {
     "@types/node": "^17.0.35",

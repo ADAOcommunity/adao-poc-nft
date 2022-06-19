@@ -1,8 +1,10 @@
 import Head from 'next/head'
+import { cloneElement } from 'react'
 import Foot from '../components/Foot'
 import Hero from '../components/Hero'
 import Menu from '../components/Menu'
 import MintItem from '../components/MintItem'
+import { collections } from '../mint'
 
 export default function Home() {
   
@@ -17,7 +19,19 @@ export default function Home() {
       <main>
         <Hero/>
         <section id="Mint">
-          <MintItem left={true}/>
+          {collections.map(col => 
+            <MintItem
+              author={col.author}
+              collectionName={col.collectionName}
+              description={col.description}
+              examples={col.examples}
+              left={col.left}
+              name={col.name}
+              key={col.name}
+              metadata={col.metadata}
+            />
+
+          )}
         </section>
       </main>
       <Foot/>

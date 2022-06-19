@@ -1,0 +1,9 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+<rect stroke="#0080FF" stroke-width="20" height="100%" width="100%"  fill="#000" rx="5%"/>
+<g text-anchor="middle" style="font:700 70pt monospace" fill="#0080FF">
+   <text x="50%" y="22%"> ADAO </text>
+   <text x="50%" y="45%"> &#x1F46D;&#x1F46B;&#x1F46C;&#x1F46D; </text>
+   <text x="50%" y="65%"> &#x1F46C;&#x1F46D;&#x1F46C;&#x1F46D; </text>
+   <text x="50%" y="85%"> &#x1F46D;&#x1F46B;&#x1F46B;&#x1F46C; </text>
+</g>
+</svg>
