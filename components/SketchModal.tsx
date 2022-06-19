@@ -5,7 +5,7 @@ import { useState } from "react";
 import { createLockingPolicyScript, mintTx } from "../utils/cardano";
 import initializeLucid from "../utils/lucid";
 import { useStoreState } from "../utils/store";
-import credentials from "../credentials";
+import mintinfo from "../mint";
 
 export default function UseSketchModal(props: { sketchLoader: Loader<{ address: string }> }) {
     const [show, showSketchModal] = useState<boolean>(false)
@@ -15,7 +15,7 @@ export default function UseSketchModal(props: { sketchLoader: Loader<{ address: 
     );
 
     async function mint(data: any, fileSrc: string | RegExpMatchArray, signTx: (txCbor: any) => Promise<any>) {
-        const policy =  {policyId:credentials.policyId,policyScript:C.NativeScript.from_bytes(Buffer.from(credentials.script, 'hex'))}
+        const policy =  {policyId: mintinfo.policyId,policyScript:C.NativeScript.from_bytes(Buffer.from(mintinfo.script, 'hex'))}
         
         const tx = await mintTx(policy.policyScript, {
             [policy.policyId]: {
@@ -102,8 +102,6 @@ export default function UseSketchModal(props: { sketchLoader: Loader<{ address: 
                                     const file = `ar://VhLE9PJYWLZTBhXcVKpbfoG-xofAagE9KABuIi9OCCs?addr=${walletStore.address}`
                                     const fileSrc = file.length > 64 ? file.match(/(.|[\r\n]){1,64}/g) : file
 
-                                    // const policy = createLockingPolicyScript(null, walletStore.address, false)
-                                    //"policyId":"edf578cc1edc64c799812c541cef7343a5cb58cf85e109b1da91b836","policyScript":"8201828200581c77491199a0c7465bdf3b330b4d941888b0e8770093b2a99a9fd8595282051a04f45abd"}
                                     mint(data, fileSrc, signTx)
                                 }}
                             >
