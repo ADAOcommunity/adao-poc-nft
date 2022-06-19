@@ -1,0 +1,31 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CollectionIndexes {
+  id            Int        @id @unique @default(autoincrement())
+  submitedTx    String?
+  
+  collection    Collection @relation(fields: [collectionId], references: [id])
+  collectionId  Int
+
+  reservedIndex Int
+  reservedAt    DateTime   @default(now())
+
+}
+
+model Collection {
+  id                Int                 @id @unique @default(autoincrement())
+  collectionName    String              @unique
+  collectionLimit   Int?
+  CollectionIndexes CollectionIndexes[]
+}

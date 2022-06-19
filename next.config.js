@@ -8,6 +8,9 @@ const nextConfig = {
       layers: true
     }
     return config
+  },
+  env:{
+    SERVER_PRIVATE_KEY: '-'
   }
 }
 

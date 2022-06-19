@@ -1,0 +1,27 @@
+services:
+  adao-poc-nftportal:
+    container_name: adao-poc-nftportal
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    depends_on:
+      - nftpostgres
+    env_file:
+      - .env
+
+  nftpostgres:
+    image: postgres:13
+    container_name: nftpostgres
+    restart: always
+    ports:
+      - 5433:5433
+    env_file:
+      - .env
+    volumes:
+      - nftpostgres:/var/lib/postgresql/data
+
+volumes:
+  nftpostgres:
+    name: nft-poc-db
