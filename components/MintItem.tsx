@@ -47,7 +47,7 @@ export default function MintItem(props: MintItemProps) {
 }
 
 function ItemInfoBlock(props:{mintItem: MintItemProps}) {
-  const { modalHtml, showNftModal } = UseNftModal({collectionName: props.mintItem.name})
+  const { modalHtml, showNftModal } = UseNftModal({nftName: props.mintItem.name, collectionName: props.mintItem.collectionName, metadata: props.mintItem.metadata})
   return (
     <>
       <div className="flex items-center p-8 bg-gray-100 dark:bg-gray-600 rounded">

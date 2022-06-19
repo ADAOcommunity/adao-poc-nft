@@ -6,28 +6,21 @@ import initializeLucid from "../utils/lucid";
 import { useStoreState } from "../utils/store";
 import mintinfo from "../mint";
 
-export default function UseNftModal(props: {collectionName: string}) {
+export default function UseNftModal(props: { nftName: string, collectionName: string, metadata: object }) {
     const [show, showNftModal] = useState<boolean>(false)
     const walletStore = useStoreState(state => state.wallet)
-   
-    async function mint(data: any, fileSrc: string | RegExpMatchArray, signTx: (txCbor: any) => Promise<any>) {
-        const policy =  {policyId: mintinfo.policyId,policyScript:C.NativeScript.from_bytes(Buffer.from(mintinfo.script, 'hex'))}
-        
+
+    async function mint(signTx: (txCbor: any) => Promise<any>) {
+        const policy = { policyId: mintinfo.policyId, policyScript: C.NativeScript.from_bytes(Buffer.from(mintinfo.script, 'hex')) }
+
+        const nftIndex = 0
+
         const tx = await mintTx(policy.policyScript, {
             [policy.policyId]: {
-                'test': {
-                    'image': data,
-                    'files': [
-                        {
-                            src: fileSrc,
-                            mediaType: "text/html"
-                        }
-                    ]
-                }
+                [props.nftName + nftIndex.toString()]: props.metadata
             }
-        }, { [policy.policyId + Buffer.from('test', 'ascii').toString('hex')]: BigInt(1) }, walletStore.name);
+        }, { [policy.policyId + Buffer.from(props.nftName + nftIndex.toString(), 'ascii').toString('hex')]: BigInt(1) }, walletStore.name);
 
-        
         let sTx = Buffer.from(await tx.txComplete.to_bytes()).toString('hex');
         console.log('Got tx')
         console.log(sTx)
@@ -39,10 +32,10 @@ export default function UseNftModal(props: {collectionName: string}) {
                 const rawResponse = await fetch(`/api/submit/${props.collectionName}`, {
                     method: 'POST',
                     headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({txHex: sTx, signatureHex: sig})
+                    body: JSON.stringify({ txHex: sTx, signatureHex: sig })
                 });
                 console.log(rawResponse)
                 const jsonRes = await rawResponse.json()
@@ -89,15 +82,9 @@ export default function UseNftModal(props: {collectionName: string}) {
                             <Button
                                 color="green"
                                 onClick={() => {
-                                    const canvas: any = document.getElementById('defaultCanvas0')
-                                    console.log('canvas')
-                                    console.log(canvas)
-                                    const dataUri = canvas.toDataURL('image/jpeg', 0.2)
-                                    const data = dataUri.length > 64 ? dataUri.match(/(.|[\r\n]){1,64}/g) : dataUri
-                                    const file = `ar://VhLE9PJYWLZTBhXcVKpbfoG-xofAagE9KABuIi9OCCs?addr=${walletStore.address}`
-                                    const fileSrc = file.length > 64 ? file.match(/(.|[\r\n]){1,64}/g) : file
 
-                                    mint(data, fileSrc, signTx)
+
+                                    mint(signTx)
                                 }}
                             >
                                 Mint
