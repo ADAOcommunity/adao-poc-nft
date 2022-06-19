@@ -41,9 +41,6 @@ export default function Menu() {
                 >
                     Home
                 </Navbar.Link>
-                <Navbar.Link href="#About">
-                    About
-                </Navbar.Link>
                 <Navbar.Link href="#Mint">
                     Mint
                 </Navbar.Link>

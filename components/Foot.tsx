@@ -13,23 +13,24 @@ export default function Foot() {
                             About
                         </h2>
                         <Footer.LinkGroup className="flex-col">
+                            {/* POC link */}
                             <Footer.Link
                                 className="mb-4"
-                                href="#"
+                                href="https://theadao.io"
                             >
                                 About
                             </Footer.Link>
                             <Footer.Link
                                 className="mb-4"
-                                href="#"
+                                href="#Mint"
                             >
                                 Mint
                             </Footer.Link>
                             <Footer.Link
                                 className="mb-4"
-                                href="https://cardanosounds.com"
+                                href="https://theadao.io"
                             >
-                                CardanoSounds
+                                ADAO
                             </Footer.Link>
                         </Footer.LinkGroup>
                     </div>
@@ -64,8 +65,8 @@ export default function Foot() {
             <div className="w-full sm:flex sm:items-center sm:justify-between">
                 <Footer.Copyright
                     href="#"
-                    by="DZ"
-                    year={2022}
+                    by="ADAO"
+                    year={new Date().getFullYear() }
                 />
                 <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
                     <Footer.Icon

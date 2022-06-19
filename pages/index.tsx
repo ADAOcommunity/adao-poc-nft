@@ -9,8 +9,8 @@ export default function Home() {
   return (
     <div className="dark:bg-gray-800">
       <Head>
-        <title>DZ - NFT</title>
-        <meta name="description" content="DZ - fun with audio, visuals and algorithms" />
+        <title>ADAO - Proof of Community - NFT</title>
+        <meta name="description" content="The ADAO 's Proof of Community commemorative NFTs" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Menu/>
