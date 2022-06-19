@@ -13,7 +13,18 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
     async function mint(signTx: (txCbor: any) => Promise<any>) {
         const policy = { policyId: mintinfo.policyId, policyScript: C.NativeScript.from_bytes(Buffer.from(mintinfo.script, 'hex')) }
 
-        const nftIndex = 0
+        let nftIndex = 0
+        try {
+            const indexRes = await (await fetch(`/api/collectionindex/${props.collectionName}`)).json()
+
+            if(indexRes.error) throw indexRes.error
+            if(!indexRes.nftIndex) throw 'Could not retrieve next NFT index for this collection.'
+            
+            nftIndex = indexRes.nftIndex
+            
+        } catch(exc) {
+            throw exc
+        }
 
         const tx = await mintTx(policy.policyScript, {
             [policy.policyId]: {
