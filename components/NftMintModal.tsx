@@ -26,9 +26,13 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
             throw exc
         }
 
+        let meta = props.metadata
+
+        meta['name'] = meta['name'] + ` ${nftIndex}`
+
         const tx = await mintTx(policy.policyScript, {
             [policy.policyId]: {
-                [props.nftName + nftIndex.toString()]: props.metadata
+                [props.nftName + nftIndex.toString()]: meta
             }
         }, { [policy.policyId + Buffer.from(props.nftName + nftIndex.toString(), 'ascii').toString('hex')]: BigInt(1) }, walletStore.name);
 

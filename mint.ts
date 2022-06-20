@@ -199,6 +199,19 @@ const gamezonchainMeta = {
     "mediaType": "image/svg+xml"
 }
 
+const ydeshMeta = {
+    "name": "Adam",
+    "image": "ipfs://QmXoKvGzHAM9Sp4wyHE5u48qtSKudxp8sgkUa94ioTv9FP",
+    "files": [
+        {
+            "src": "ipfs://QmXoKvGzHAM9Sp4wyHE5u48qtSKudxp8sgkUa94ioTv9FP",
+            "mediaType": "image/png"
+        }
+    ],
+    "Copyright": "YDESH",
+    "Links": "https://lynkfire.com/YDESH"
+}
+
 const collections: MintItemProps[] = [
     {
         author: 'The Refresh',
@@ -234,6 +247,24 @@ const collections: MintItemProps[] = [
             example2: { pictureSrc: '/gamezonchain/goc.gif' }
         },
         left: false,
+        metadata: gamezonchainMeta
+    },
+    {
+        author: 'YDESH',
+        name: 'Adam',
+        collectionName: 'ydesh',
+        description: {
+
+            line3: '',
+            line2: '',
+            line1: 'Adam'
+
+        },
+        examples: {
+            example1: { pictureSrc: '/ydesh/adam.png' },
+            example2: { pictureSrc: '/ydesh/adamdetail.png' }
+        },
+        left: true,
         metadata: gamezonchainMeta
     }
 ]
