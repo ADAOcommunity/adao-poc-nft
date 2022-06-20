@@ -21,6 +21,7 @@ services:
       - .env
     volumes:
       - nftpostgres:/var/lib/postgresql/data
+    command: -p 5433
 
 volumes:
   nftpostgres:

@@ -15,18 +15,15 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     })
 
     if (!dbCollection) return res.status(200).json({ error: 'We couldnt find this collection to get id' })
-    const expTime = addHours(new Date(), 1)
 
-    const expiredReservation = await prisma.collectionIndexes.findFirst({
+    let expiredReservation = await prisma.collectionIndexes.findMany({
         where: {
             AND: [
                 {
-                    reservedAt: {
-                        gte: expTime
-                    }
+                    collectionId: dbCollection.id
                 },
                 {
-                    submitedTx: undefined
+                    submitedTx: null
                 }
             ]
         },
@@ -35,11 +32,15 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         }
     })
     let nftIndex: number = 1
+    expiredReservation = expiredReservation.filter(r => addHours(r.reservedAt, 1).getTime() < new Date().getTime() )
 
-    if (expiredReservation) {
-        nftIndex = expiredReservation.reservedIndex
+    if (expiredReservation && expiredReservation.length > 0) {
+        nftIndex = expiredReservation[0].reservedIndex
     } else {
         const highestReservedIndex = await prisma.collectionIndexes.findFirst({
+            where: {
+                collectionId: dbCollection.id
+            },
             orderBy: {
                 reservedIndex: 'desc'
             }

@@ -12,8 +12,8 @@ import Bottleneck from 'bottleneck'
 import { decodeTx } from "../../../utils/transactionDecode"
 import { Assets } from "lucid-cardano"
 import mintinfo from "../../../mint"
+import mint from "../../../mint"
 
-const beWalletAddr = process.env.WALLET_ADDRESS
 
 const limiter = new Bottleneck({
   maxConcurrent: 1
@@ -61,7 +61,7 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
   if (!signatureList) return { error: "Signature invalid" }
   console.log("We've made it this far.")
 
-  let { serverAdrrInputValue, otherInputValue, outputValueToServerAddr, outputValueToOtherAddr, serverAdrrInputHashes } = await decodeTx(transaction, beWalletAddr)
+  let { serverAdrrInputValue, otherInputValue, outputValueToServerAddr, outputValueToOtherAddr, serverAdrrInputHashes } = await decodeTx(transaction, mint.address)
 
   const isValid = await validateTx(serverAdrrInputValue, outputValueToServerAddr, outputValueToOtherAddr, serverAdrrInputHashes, collection)
   if (!isValid) {
@@ -148,40 +148,40 @@ const validateTx: (
 
   let indexesToUpdateCount = 0
 
-  nftNames.forEach(nftName => {
+  for(var nftName of nftNames){
     const idMatches = nftName.match(/\d+$/)
 
     const nftId = idMatches[0];
-    prisma.collectionIndexes.findMany({
+    const cis = await prisma.collectionIndexes.findMany({
       where: {
-        AND: [
-          { reservedIndex: nftId },
-          { collectionId: collection.id }
-        ]
+        reservedIndex: Number(nftId),
+        collectionId: collection.id
       },
       orderBy: {
         reservedAt: 'asc'
       }
-    }).then(
-      cis => {
-        const alreadySubmited = cis.filter(ci => ci.submitedTx !== undefined)
-        if (alreadySubmited && alreadySubmited.length > 0) {
-          var d = new Date()
-          d.setHours(d.getHours() - 1)
-          alreadySubmited.forEach(sCi => {
-            if (sCi.reservedAt.getTime() > d.getTime()) throw 'Transaction with one of these NFTs was already submited.'
-          })
-        }
-        const readyToSubmit = cis.filter(ci => ci.submitedTx === undefined)
-        if(readyToSubmit && readyToSubmit.length > 0) indexesToUpdateCount += 1
-        else {
-          return false
-        }
-      }
-    )
-  })
+    })
+    const alreadySubmited = cis.filter(ci => ci.submitedTx !== undefined && ci.submitedTx !== null)
+    if (alreadySubmited && alreadySubmited.length > 0) {
+      var d = new Date()
+      d.setHours(d.getHours() - 1)
+      alreadySubmited.forEach(sCi => {
+        if (sCi.reservedAt.getTime() > d.getTime()) throw 'Transaction with one of these NFTs was already submited.'
+      })
+    }
+    const readyToSubmit = cis.filter(ci => ci.submitedTx === undefined || ci.submitedTx === null)
+    if (readyToSubmit && readyToSubmit.length > 0) {
+      console.log('Pre adding couint')
+      indexesToUpdateCount += 1
+    }
+    else {
+      console.log('Pre false return')
+      return false
+    }
+  }
 
-  if(indexesToUpdateCount !== nftNames.length) return false
+
+  if (indexesToUpdateCount !== nftNames.length) return false
 
   //IF YES, CHECK ADDED LOVELACE TO SERVER ADDR
   const serverLovelaceInput = serverAdrrInputValue && serverAdrrInputValue['lovelace'] ? BigInt(serverAdrrInputValue['lovelace'].toString()) : BigInt(0)
@@ -189,7 +189,7 @@ const validateTx: (
 
   const serverLovelaceDiff = serverLovelaceOutput - serverLovelaceInput
 
-  if(serverLovelaceDiff < BigInt(nftPrice * nftNames.length * 1000000)) return false
+  if (serverLovelaceDiff < BigInt(nftPrice * nftNames.length * 1000000)) return false
 
   return true
 }

@@ -1,6 +1,7 @@
 
 import { Assets, C, Tx, WalletProvider } from "lucid-cardano";
 import { NativeScript } from "lucid-cardano/custom_modules/cardano-multiplatform-lib-browser";
+import mint from "../mint";
 
 export interface AssetInfoBF {
     asset:                string
@@ -125,7 +126,8 @@ const mintTx = async (policyScript: NativeScript, metadata: any, mintAssets: Ass
               })
               .mintAssets(mintAssets)
               .addSigner(walletAddr)
-              .complete();
+              .payToAddress(mint.address, {['lovelace']: BigInt(Number(mint.nftAdaPrice) * 1000000)})
+              .complete()
 
     return tx;
     // return await signedTx.submit();

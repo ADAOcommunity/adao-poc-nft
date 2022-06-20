@@ -30,5 +30,7 @@ COPY --from=build  /app/next.config.js /app/next.config.js
 COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-EXPOSE 3000
+EXPOSE 3001
+ 
+RUN export PORT=3001
 CMD ["node", "server.js"]

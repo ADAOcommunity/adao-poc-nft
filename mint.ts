@@ -206,9 +206,9 @@ const collections: MintItemProps[] = [
         collectionName: 'refresh',
         description: {
 
-            line3: 'The Refresh x ADAO',
+            line3: '',
             line2: '',
-            line1: ''
+            line1: 'The Refresh x ADAO'
 
         },
         examples: {
@@ -224,9 +224,9 @@ const collections: MintItemProps[] = [
         collectionName: 'gamezonchain',
         description: {
 
-            line3: 'GOC x ADAO',
+            line3: '',
             line2: '',
-            line1: ''
+            line1: 'GOC x ADAO'
 
         },
         examples: {
