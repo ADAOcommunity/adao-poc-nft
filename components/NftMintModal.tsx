@@ -18,7 +18,7 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
     const [msg, setMsg] = useState("")
 
     const showNftModal = (state: boolean = true) => {
-        if(state){
+        if (state) {
             setMsg("")
             setState(undefined)
             setMsg("")
@@ -33,12 +33,12 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
         setMsg("")
         setState("loading")
         setMsg("Waiting...")
-        try{
+        try {
             const res = await action()
             setMsg("")
             setState('success')
             setMsg(`Submitted: ${res}`)
-        } catch(err: any) {
+        } catch (err: any) {
             setMsg("")
             setState('error')
             console.log(JSON.stringify(err))
@@ -82,19 +82,20 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
         console.log(sig)
         if (sig && sTx) {
             try {
-                const rawResponse = await fetch(`/api/submit/${props.collectionName}`, {
+               
+                const response = await fetch(`/api/submit/${props.collectionName}`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ txHex: sTx, signatureHex: sig })
-                });
-                console.log(rawResponse)
-                const jsonRes = await rawResponse.json()
-                if(jsonRes.txhash) return jsonRes.txhash
+                })
+                const jsonRes = await response.json()
+                if (jsonRes.txhash) return jsonRes.txhash
                 else throw jsonRes.error
-            } catch {
+            } catch (exc) {
+                throw exc
             }
         }
         throw "Transaction failed to submit";
@@ -139,7 +140,7 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
                             :
                             <>
                                 <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                   Mint your Cardano NFT
+                                    Mint your Cardano NFT
                                 </h3>
                                 <div className="flex justify-end gap-4 pt-4">
                                     <Button

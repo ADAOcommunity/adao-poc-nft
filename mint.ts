@@ -208,6 +208,7 @@ const ydeshMeta = {
             "mediaType": "image/png"
         }
     ],
+    "Description": "Minted with ADAO for Proof of Community week",
     "Copyright": "YDESH",
     "Links": "https://lynkfire.com/YDESH"
 }
@@ -265,7 +266,7 @@ const collections: MintItemProps[] = [
             example2: { pictureSrc: '/ydesh/adamdetail.png' }
         },
         left: true,
-        metadata: gamezonchainMeta
+        metadata: ydeshMeta
     }
 ]
 

@@ -63,7 +63,17 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
 
   let { serverAdrrInputValue, otherInputValue, outputValueToServerAddr, outputValueToOtherAddr, serverAdrrInputHashes } = await decodeTx(transaction, mint.address)
 
-  const isValid = await validateTx(serverAdrrInputValue, outputValueToServerAddr, outputValueToOtherAddr, serverAdrrInputHashes, collection)
+  let isValid: boolean, nftNames: string[]
+ 
+  try {
+    const validRes = await validateTx(serverAdrrInputValue, outputValueToServerAddr, outputValueToOtherAddr, serverAdrrInputHashes, collection)
+    isValid = validRes.isValid
+    nftNames = validRes.nftNames
+  }
+  catch(exc) {
+    return { error: exc }
+  }
+  
   if (!isValid) {
     return { error: "Transaction invalid" }
   }
@@ -98,14 +108,13 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
     return { error: errMsg }
   }
 
-  // //if response looks like txHash, set used utxo as locked, set user as claimed
   if (!resS || resS.toString().length !== 64) {
     console.log('Submit res:')
     console.log(resS)
     return { error: resS }
   } else {
 
-    // await addBusyNftIndex(nftIndex, resS.toString())
+    await setNftsAsSubmited(nftNames, collection, resS.toString())
     return { txhash: resS.toString() }
   }
 }
@@ -116,12 +125,11 @@ const validateTx: (
   outputValueToOtherAddr: Assets,
   serverAdrrInputHashes: string[],
   collection: Collection
-) => Promise<boolean> = async (serverAdrrInputValue: Assets, outputValueToServerAddr: Assets, outputValueToOtherAddr: Assets, serverAdrrInputHashes: string[], collection: Collection) => {
+) => Promise<{ isValid: boolean, nftNames: string[] }> = async (serverAdrrInputValue: Assets, outputValueToServerAddr: Assets, outputValueToOtherAddr: Assets, serverAdrrInputHashes: string[], collection: Collection) => {
   console.log(serverAdrrInputHashes)
-  if (serverAdrrInputHashes && serverAdrrInputHashes.length > 0) return false
+  if (serverAdrrInputHashes && serverAdrrInputHashes.length > 0) return { isValid: false, nftNames: [] }
 
   const nftPrice = Number(mintinfo.nftAdaPrice)
-
 
   //GET NFT NAMES
   let nftNames = []
@@ -148,7 +156,7 @@ const validateTx: (
 
   let indexesToUpdateCount = 0
 
-  for(var nftName of nftNames){
+  for (var nftName of nftNames) {
     const idMatches = nftName.match(/\d+$/)
 
     const nftId = idMatches[0];
@@ -166,7 +174,7 @@ const validateTx: (
       var d = new Date()
       d.setHours(d.getHours() - 1)
       alreadySubmited.forEach(sCi => {
-        if (sCi.reservedAt.getTime() > d.getTime()) throw 'Transaction with one of these NFTs was already submited.'
+        if (sCi.reservedAt.getTime() > d.getTime()) throw 'One of the NFTs in the transaction was already submited.'
       })
     }
     const readyToSubmit = cis.filter(ci => ci.submitedTx === undefined || ci.submitedTx === null)
@@ -176,12 +184,12 @@ const validateTx: (
     }
     else {
       console.log('Pre false return')
-      return false
+      return { isValid: false, nftNames }
     }
   }
 
 
-  if (indexesToUpdateCount !== nftNames.length) return false
+  if (indexesToUpdateCount !== nftNames.length) return { isValid: false, nftNames }
 
   //IF YES, CHECK ADDED LOVELACE TO SERVER ADDR
   const serverLovelaceInput = serverAdrrInputValue && serverAdrrInputValue['lovelace'] ? BigInt(serverAdrrInputValue['lovelace'].toString()) : BigInt(0)
@@ -189,9 +197,40 @@ const validateTx: (
 
   const serverLovelaceDiff = serverLovelaceOutput - serverLovelaceInput
 
-  if (serverLovelaceDiff < BigInt(nftPrice * nftNames.length * 1000000)) return false
+  if (serverLovelaceDiff < BigInt(nftPrice * nftNames.length * 1000000)) return { isValid: false, nftNames }
 
-  return true
+  return { isValid: true, nftNames }
+}
+
+
+const setNftsAsSubmited = async (nftNames: string[], collection: Collection, txHash: string) => {
+  for (var nftName of nftNames) {
+    const idMatches = nftName.match(/\d+$/)
+
+    const nftId = idMatches[0];
+    const cis = await prisma.collectionIndexes.findMany({
+      where: {
+        reservedIndex: Number(nftId),
+        collectionId: collection.id
+      },
+      orderBy: {
+        reservedAt: 'asc'
+      }
+    })
+
+    const notSubmited = cis.filter(ci => ci.submitedTx === undefined && ci.submitedTx === null)
+
+    if (notSubmited && notSubmited.length > 0) {
+      await prisma.collectionIndexes.update({
+        where: {
+          id: notSubmited[0].id
+        },
+        data: {
+          submitedTx: txHash
+        }
+      })
+    }
+  }
 }
 
 
