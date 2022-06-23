@@ -5,9 +5,47 @@ import { mintTx } from "../utils/cardano";
 import initializeLucid from "../utils/lucid";
 import { useStoreState } from "../utils/store";
 import mintinfo from "../mint";
+import UseAnimations from 'react-useanimations';
+import alertTriangle from 'react-useanimations/lib/alertTriangle'
+import loading from 'react-useanimations/lib/loading'
+import success from 'react-useanimations/lib/checkmark'
 
+
+type ActionState = "loading" | "success" | "error" | undefined
 export default function UseNftModal(props: { nftName: string, collectionName: string, metadata: object }) {
-    const [show, showNftModal] = useState<boolean>(false)
+    const [show, nftModalVisible] = useState<boolean>(false)
+    const [state, setState] = useState<ActionState>(undefined)
+    const [msg, setMsg] = useState("")
+
+    const showNftModal = (state: boolean = true) => {
+        if(state){
+            setMsg("")
+            setState(undefined)
+            setMsg("")
+        } else {
+            setMsg("")
+            setState(undefined)
+        }
+        nftModalVisible(state)
+    }
+
+    const doAction = async (action: () => Promise<any>) => {
+        setMsg("")
+        setState("loading")
+        setMsg("Waiting...")
+        try{
+            const res = await action()
+            setMsg("")
+            setState('success')
+            setMsg(`Submitted: ${res}`)
+        } catch(err: any) {
+            setMsg("")
+            setState('error')
+            console.log(JSON.stringify(err))
+            setMsg(`Error: ${err.info || err.message || err || ''}`)
+        }
+    }
+
     const walletStore = useStoreState(state => state.wallet)
 
     async function mint(signTx: (txCbor: any) => Promise<any>) {
@@ -17,12 +55,12 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
         try {
             const indexRes = await (await fetch(`/api/collectionindex/${props.collectionName}`)).json()
 
-            if(indexRes.error) throw indexRes.error
-            if(!indexRes.nftIndex) throw 'Could not retrieve next NFT index for this collection.'
-            
+            if (indexRes.error) throw indexRes.error
+            if (!indexRes.nftIndex) throw 'Could not retrieve next NFT index for this collection.'
+
             nftIndex = indexRes.nftIndex
-            
-        } catch(exc) {
+
+        } catch (exc) {
             throw exc
         }
 
@@ -54,8 +92,8 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
                 });
                 console.log(rawResponse)
                 const jsonRes = await rawResponse.json()
-                console.log(jsonRes)
-                return jsonRes
+                if(jsonRes.txhash) return jsonRes.txhash
+                else throw jsonRes.error
             } catch {
             }
         }
@@ -84,33 +122,47 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
             <Modal.Body className="text-center">
                 {walletStore.connected && walletStore.name ?
                     <>
-                        <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                            Your sketch
-                        </h3>
-                        <div className="flex justify-center content-center flex-col ">
-                            {/* <P5Sketch address={walletStore.address} /> */}
-                        </div>
-                        <p className="mb-5 font-normal text-gray-500 dark:text-gray-400">
-                            *Click and hold to play*
-                        </p>
-                        <div className="flex justify-end gap-4 pt-4">
-                            <Button
-                                color="green"
-                                onClick={() => {
-
-
-                                    mint(signTx)
-                                }}
-                            >
-                                Mint
-                            </Button>
-                            <Button
-                                color="alternative"
-                                onClick={() => showNftModal(false)}
-                            >
-                                Cancel
-                            </Button>
-                        </div>
+                        {state && msg ?
+                            <>
+                                <UseAnimations
+                                    className="mx-auto"
+                                    strokeColor="currentColor"
+                                    size={128}
+                                    animation={
+                                        state === 'error' ?
+                                            alertTriangle : state === 'success' ?
+                                                success : loading
+                                    }
+                                />
+                                <h3 className="text-lg font-bold mx-auto">{msg}</h3>
+                            </>
+                            :
+                            <>
+                                <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                                   Mint your Cardano NFT
+                                </h3>
+                                <div className="flex justify-end gap-4 pt-4">
+                                    <Button
+                                        color="green"
+                                        onClick={() => {
+                                            doAction(() => mint(signTx))
+                                        }}
+                                    >
+                                        Mint
+                                    </Button>
+                                    <Button
+                                        color="alternative"
+                                        onClick={() => {
+                                            setMsg("")
+                                            setState(undefined)
+                                            showNftModal(false)
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </>
+                        }
                     </>
                     : <>
                         <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
