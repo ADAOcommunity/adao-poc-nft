@@ -59,8 +59,8 @@ function ItemInfoBlock(props:{mintItem: MintItemProps}) {
           <p className="mt-8 text-base text-gray-700 dark:text-gray-50 max-w-[45ch]">
             {props.mintItem.description.line1}<br/>
             {props.mintItem.description.line2}<br/>
-            {props.mintItem.description.line3}<br/>
           </p>
+          <a href={`${props.mintItem.description.line3}`}>{props.mintItem.description.line3}</a><br/>
           
           <p className="mt-3">Price: ₳{mint.nftAdaPrice}</p>
           <button

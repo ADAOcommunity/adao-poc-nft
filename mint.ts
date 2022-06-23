@@ -220,8 +220,8 @@ const collections: MintItemProps[] = [
         collectionName: 'refresh',
         description: {
 
-            line3: '',
-            line2: '',
+            line3: 'https://twitter.com/_ThisCr8zyLife_',
+            line2: `"Proof of Community"`,
             line1: 'The Refresh x ADAO'
 
         },
@@ -238,8 +238,8 @@ const collections: MintItemProps[] = [
         collectionName: 'gamezonchain',
         description: {
 
-            line3: '',
-            line2: '',
+            line3: 'https://twitter.com/gamezonchain',
+            line2: 'Proof of Community (Axiom #1): Nobody can destroy a well-founded, decentralized community.',
             line1: 'GOC x ADAO'
 
         },
@@ -256,7 +256,7 @@ const collections: MintItemProps[] = [
         collectionName: 'ydesh',
         description: {
 
-            line3: '',
+            line3: 'https://twitter.com/NFT_YDesh',
             line2: '',
             line1: 'Adam'
 

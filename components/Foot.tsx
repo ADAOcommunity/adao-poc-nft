@@ -41,19 +41,19 @@ export default function Foot() {
                         <Footer.LinkGroup className="flex-col">
                             <Footer.Link
                                 className="mb-4"
-                                href="#"
+                                href="https://twitter.com/ADAOcommunity"
                             >
                                 Twitter
                             </Footer.Link>
                             <Footer.Link
                                 className="mb-4"
-                                href="#"
+                                href="https://github.com/ADAOcommunity/"
                             >
                                 Github
                             </Footer.Link>
                             <Footer.Link
                                 className="mb-4"
-                                href="#"
+                                href="https://discord.gg/ztdbhmtp6a"
                             >
                                 Discord
                             </Footer.Link>
