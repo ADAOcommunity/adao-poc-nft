@@ -21,6 +21,9 @@
     "react-icons": "^4.3.1",
     "react-useanimations": "^2.0.8"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/node": "^17.0.35",
     "@types/react": "^17.0.2",
