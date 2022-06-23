@@ -218,7 +218,7 @@ const setNftsAsSubmited = async (nftNames: string[], collection: Collection, txH
       }
     })
 
-    const notSubmited = cis.filter(ci => ci.submitedTx === undefined && ci.submitedTx === null)
+    const notSubmited = cis.filter(ci => ci.submitedTx === undefined || ci.submitedTx === null)
 
     if (notSubmited && notSubmited.length > 0) {
       await prisma.collectionIndexes.update({
