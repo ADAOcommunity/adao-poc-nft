@@ -24,6 +24,11 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
                 },
                 {
                     submitedTx: null
+                },
+                {
+                    reservedAt: {
+                      lte: subtractHour(new Date(), 1)
+                    }
                 }
             ]
         },
@@ -32,7 +37,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
         }
     })
     let nftIndex: number = 1
-    expiredReservation = expiredReservation.filter(r => addHours(r.reservedAt, 1).getTime() < new Date().getTime())
     if (expiredReservation && expiredReservation.length > 0) {
         const cis = await prisma.collectionIndexes.findMany({
             where: {
@@ -78,7 +82,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json({ nftIndex: nftIndex })
 }
 
-const addHours = function (date: Date, hours: number) {
-    date.setTime(date.getTime() + (hours * 60 * 60 * 1000))
+const subtractHour = (date: Date, hours: number) => {
+    date.setHours(date.getHours() - hours);
     return date;
-}
+  }
+  
