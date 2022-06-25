@@ -63,7 +63,7 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
             throw exc
         }
 
-        let meta = props.metadata
+        let meta = Object.create(props.metadata)
 
         meta['name'] = meta['name'] + ` ${nftIndex}`
 
