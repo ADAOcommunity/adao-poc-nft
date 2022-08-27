@@ -81,7 +81,6 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
         console.log(sig)
         if (sig && sTx) {
             try {
-               
                 const response = await fetch(`/api/submit/${props.collectionName}`, {
                     method: 'POST',
                     headers: {
@@ -90,6 +89,7 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
                     },
                     body: JSON.stringify({ txHex: sTx, signatureHex: sig })
                 })
+                console.log(await response.json())
                 const jsonRes = await response.json()
                 if (jsonRes.txhash) return jsonRes.txhash
                 else throw jsonRes.error

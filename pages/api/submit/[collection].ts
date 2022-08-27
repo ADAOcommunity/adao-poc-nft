@@ -68,6 +68,7 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
   try {
     const validRes = await validateTx(serverAdrrInputValue, outputValueToServerAddr, outputValueToOtherAddr, serverAdrrInputHashes, collection)
     isValid = validRes.isValid
+    console.log("isVald", isValid)
     nftNames = validRes.nftNames
   }
   catch(exc) {
@@ -81,10 +82,11 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
   const transaction_body = transaction.body()
 
   const txBodyHash = C.hash_transaction(transaction_body)
-
   const serverKey = process.env.SERVER_PRIVATE_KEY
 
-  const sKey = C.PrivateKey.from_extended_bytes(Buffer.from(serverKey, 'hex'))
+  const sKey = C.PrivateKey.from_extended_bytes(await Buffer.from(serverKey, 'hex'))
+
+  console.log("skey", sKey)
 
   const witness = C.make_vkey_witness(
     txBodyHash,
@@ -98,13 +100,17 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
   let aux = C.AuxiliaryData.new()
   if (transaction.auxiliary_data()) aux = transaction.auxiliary_data()
   const signedTx = C.Transaction.new(transaction.body(), signatureSet, aux)
+  //console.log(signedTx)
   const lib = await initializeLucid(null)
+  console.log("lib", lib)
   let resS = null
   try {
     resS = await lib.provider.submitTx(signedTx)
+    console.log("resS",resS)
   }
   catch (exc) {
     const errMsg = exc.info || exc.message || exc || ''
+    console.log("err", errMsg)
     return { error: errMsg }
   }
 
@@ -113,7 +119,6 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
     console.log(resS)
     return { error: resS }
   } else {
-
     await setNftsAsSubmited(nftNames, collection, resS.toString())
     return { txhash: resS.toString() }
   }

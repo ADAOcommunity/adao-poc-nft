@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     const sKey = C.PrivateKey.generate_ed25519extended()
     const sKeyHash = sKey.to_public().hash()
     const stakeCred = C.StakeCredential.from_keyhash(sKeyHash)
-    const addr =  C.BaseAddress.new(1, stakeCred, stakeCred).to_address().to_bech32()
+    const addr =  C.BaseAddress.new(parseInt(process.env.NETWORK), stakeCred, stakeCred).to_address().to_bech32()
 
     const date = new Date()
     var newDate = new Date(date.setMonth(date.getMonth()+6))
@@ -56,7 +56,7 @@ const getSlotInEpochBySlot = (slot: number, isMainnet: boolean) => slotSinceShel
 
 const DATUM_LABEL = 405;
 
-const createLockingPolicyScript = (address: string, expirationTime: Date, mainnet: boolean = true) => {
+const createLockingPolicyScript = (address: string, expirationTime: Date, mainnet: boolean = Boolean(parseInt(process.env.NETWORK))) => {
     const lockSlot = !expirationTime ? undefined : estimateSlotByDate(expirationTime, mainnet)
     
     const nativeScripts = C.NativeScripts.new();
