@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { PrismaClient } from '@prisma/client'
+import mint from "../../../mint";
 
 const prisma = new PrismaClient()
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
     const { collection } = req.query;
-    const reservationTime = parseInt(process.env.RESERVATION_MINUTES);
+    const reservationTime = parseInt(mint.reservationTime);
 
     const collectionName = collection.toString()
 
@@ -51,8 +52,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
             }
         })
         const alreadySubmited = cis.filter(ci => ci.submitedTx !== undefined && ci.submitedTx !== null)
-        const recentReserved = cis.filter(ci => ci.reservedAt >subtractMinutes(new Date(),reservationTime) )
-        console.log(recentReserved)
+        const recentReserved = cis.filter(ci => ci.reservedAt >subtractMinutes(new Date(),reservationTime))
         if ((alreadySubmited  && alreadySubmited.length > 0) || recentReserved.length > 0) {
             nftIndex = undefined
         } else {

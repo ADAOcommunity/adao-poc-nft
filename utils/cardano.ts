@@ -111,6 +111,7 @@ const getAssetsInfo: (unit: string) => Promise<AssetInfoBF> = async (unit: strin
   }})).json() as AssetInfoBF)
 }
 
+
 const mintTx = async (policyScript: NativeScript, metadata: any, mintAssets: Assets, walletName: string) => {
   let networkEndpoint = process.env.NETWORK === '0' ? 'https://cardano-testnet.blockfrost.io/api/v0' : 'https://cardano-mainnet.blockfrost.io/api/v0' //process.env.BLOCKFROST_URL ? process.env.BLOCKFROST_URL : ''
   let blockfrostApiKey = process.env.NETWORK === '0' ? process.env.BLOCKFROST_TESTNET: process.env.BLOCKFROST_MAINNET  //process.env.BLOCKFROST_API_KEY ? process.env.BLOCKFROST_API_KEY : ''
@@ -123,6 +124,7 @@ const mintTx = async (policyScript: NativeScript, metadata: any, mintAssets: Ass
     await Lucid.selectWallet(walletName as WalletProvider)
     const walletAddr = await Lucid.wallet.address()
     let assets = {...mintAssets}; assets['lovelace']=BigInt(1600000);
+    console.log(parseInt(mint.reservationTime)*60000)
     const tx = await Tx.new()
               .attachMetadataWithConversion(721, metadata)
               .attachMintingPolicy({
@@ -131,7 +133,7 @@ const mintTx = async (policyScript: NativeScript, metadata: any, mintAssets: Ass
               })
               .mintAssets(mintAssets)
               .addSigner(walletAddr)
-              .validTo(Date.now()+120000)
+              .validTo(Date.now()+parseInt(mint.reservationTime)*60000)
               .payToAddress(mint.address, {['lovelace']: BigInt(Number(mint.nftAdaPrice) * 1000000)})
               .payToAddress(walletAddr, assets)
               .complete()

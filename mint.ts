@@ -1,13 +1,13 @@
 import { MintItemProps } from "./types"
 
 const mint = 
-
 {
     "address": "addr_test1qzuq388jjx50yuvagjmlj6mlz3vc883hwantjycpkj359vdcpzw09ydg7fce639hl94h79zesw0rwamxhyfsrd9rg2csrlzqpw",
     "policyId": "955b1c9393739174e3a477ed24244dbad1a0c99f817e788c6efe07aa",
     "script": "82018282051a04f2d8918200581cb8089cf291a8f2719d44b7f96b7f1459839e377766b91301b4a342b1",
     "paymentKeyHash": "b8089cf291a8f2719d44b7f96b7f1459839e377766b91301b4a342b1",
-    "nftAdaPrice": "3"
+    "nftAdaPrice": "3",
+    "reservationTime":"20"  //reservation time in minutes
 
 }
 
