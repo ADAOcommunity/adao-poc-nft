@@ -19,7 +19,6 @@ const blockfrostRequest = async ({
             })
         ).json();
     } catch (error) {
-        console.log(error);
         return null;
     }
 }

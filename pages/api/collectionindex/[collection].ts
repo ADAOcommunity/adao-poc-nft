@@ -29,7 +29,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
                 },
                 {
                     reservedAt: {
-                      lte:subtractMinutes(new Date(),reservationTime)
+                        lte: subtractMinutes(new Date(), reservationTime)
                     }
                 }
             ]
@@ -38,8 +38,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
             reservedAt: 'asc'
         }
     })
-    console.log("expired",expiredReservation.length)
-    console.log(subtractMinutes(new Date(),5))
     let nftIndex: number = 1
     if (expiredReservation && expiredReservation.length > 0) {
         const cis = await prisma.collectionIndexes.findMany({
@@ -52,8 +50,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
             }
         })
         const alreadySubmited = cis.filter(ci => ci.submitedTx !== undefined && ci.submitedTx !== null)
-        const recentReserved = cis.filter(ci => ci.reservedAt >subtractMinutes(new Date(),reservationTime))
-        if ((alreadySubmited  && alreadySubmited.length > 0) || recentReserved.length > 0) {
+        const recentReserved = cis.filter(ci => ci.reservedAt > subtractMinutes(new Date(), reservationTime))
+        if ((alreadySubmited && alreadySubmited.length > 0) || recentReserved.length > 0) {
             nftIndex = undefined
         } else {
             nftIndex = expiredReservation[0].reservedIndex
@@ -65,34 +63,21 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     if (nftIndex === undefined) {
         const highestReservedIndex = await prisma.collectionIndexes.findFirst({
             where: {
-                AND: [
-                    {
-                        collectionId: dbCollection.id
-                    },
-                    {
-                        submitedTx: null
-                    },
-                    {
-                        reservedAt: {
-                          gte:subtractMinutes(new Date(),reservationTime)
-                        }
-                    }
-                ]
+                collectionId: dbCollection.id
             },
             orderBy: {
                 reservedIndex: 'desc'
             }
         })
-        console.log(highestReservedIndex)
         if (highestReservedIndex) {
             nftIndex = highestReservedIndex.reservedIndex + 1
         } else {
             nftIndex = 1
         }
     }
-    console.log(nftIndex)
+
     if (nftIndex > dbCollection.collectionLimit && dbCollection.collectionLimit != null) return res.status(200).json({ error: 'Out of stock' })
-    
+
     await prisma.collectionIndexes.create({
         data: {
             reservedIndex: nftIndex,
@@ -105,10 +90,9 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 const subtractMinutes = (date: Date, minutes: number) => {
     let offset = date.getTimezoneOffset()
     let newDate = new Date(Date.now() + offset)
-   // newDate.setHours(date.getHours() - hours);
+    // newDate.setHours(date.getHours() - hours);
     newDate.setMinutes(date.getMinutes() - minutes)
     //date.setHours(date.getHours() - hours);
     return newDate;
-   // return date;
-  }
-  
+    // return date;
+}

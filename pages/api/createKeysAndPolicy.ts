@@ -41,7 +41,6 @@ export default async function handler(req, res) {
         paymentKeyHash: policy.paymentKeyHash,
         key: Buffer.from(sKey.as_bytes()).toString('hex')
     }
-    console.log(returnVal)
     return res.status(200).json(returnVal)
 }
 

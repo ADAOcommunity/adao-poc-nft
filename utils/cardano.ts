@@ -124,7 +124,6 @@ const mintTx = async (policyScript: NativeScript, metadata: any, mintAssets: Ass
     await Lucid.selectWallet(walletName as WalletProvider)
     const walletAddr = await Lucid.wallet.address()
     let assets = {...mintAssets}; assets['lovelace']=BigInt(1600000);
-    console.log(parseInt(mint.reservationTime)*60000)
     const tx = await Tx.new()
               .attachMetadataWithConversion(721, metadata)
               .attachMintingPolicy({
