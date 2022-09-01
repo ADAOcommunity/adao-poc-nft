@@ -125,7 +125,6 @@ const getFormatedTxInputs = async (inputs: any) => {
 
             }
         } catch (exc) {
-            console.log(exc);
             throw 'We could not map the correct input when decoding the transaction.';
         }
     }

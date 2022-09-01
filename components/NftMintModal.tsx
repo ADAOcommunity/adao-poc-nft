@@ -74,14 +74,9 @@ export default function UseNftModal(props: { nftName: string, collectionName: st
         }, { [policy.policyId + Buffer.from(props.nftName + nftIndex.toString(), 'ascii').toString('hex')]: BigInt(1) }, walletStore.name);
 
         let sTx = Buffer.from(await tx.txComplete.to_bytes()).toString('hex');
-        console.log('Got tx')
-        console.log(sTx)
         let sig = await signTx(sTx);
-        console.log('got sig')
-        console.log(sig)
         if (sig && sTx) {
             try {
-               
                 const response = await fetch(`/api/submit/${props.collectionName}`, {
                     method: 'POST',
                     headers: {

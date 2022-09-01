@@ -1,5 +1,5 @@
 
-import { Assets, C, Tx, WalletProvider } from "lucid-cardano";
+import { Assets, C, Network, Tx, WalletProvider } from "lucid-cardano";
 import { NativeScript } from "lucid-cardano/custom_modules/cardano-multiplatform-lib-browser";
 import mint from "../mint";
 
@@ -104,20 +104,26 @@ function registerPolicy(policy: { policyId: string; script: NativeScript; lockSl
 }
 
 const getAssetsInfo: (unit: string) => Promise<AssetInfoBF> = async (unit: string) => {
-  return (await (await fetch(`https://cardano-testnet.blockfrost.io/api/v0/assets/${unit}`, { headers: {
-      project_id: 'testnetRvOtxC8BHnZXiBvdeM9b3mLbi8KQPwzA'
+  let networkEndpoint = process.env.NETWORK === '0' ? 'https://cardano-testnet.blockfrost.io/api/v0' : 'https://cardano-mainnet.blockfrost.io/api/v0' //process.env.BLOCKFROST_URL ? process.env.BLOCKFROST_URL : ''
+  let blockfrostApiKey = process.env.NETWORK === '0' ? process.env.BLOCKFROST_TESTNET: process.env.BLOCKFROST_MAINNET  //process.env.BLOCKFROST_API_KEY ? process.env.BLOCKFROST_API_KEY : ''
+  return (await (await fetch(`${networkEndpoint}/assets/${unit}`, { headers: {
+      project_id: blockfrostApiKey
   }})).json() as AssetInfoBF)
 }
 
+
 const mintTx = async (policyScript: NativeScript, metadata: any, mintAssets: Assets, walletName: string) => {
+  let networkEndpoint = process.env.NETWORK === '0' ? 'https://cardano-testnet.blockfrost.io/api/v0' : 'https://cardano-mainnet.blockfrost.io/api/v0' //process.env.BLOCKFROST_URL ? process.env.BLOCKFROST_URL : ''
+  let blockfrostApiKey = process.env.NETWORK === '0' ? process.env.BLOCKFROST_TESTNET: process.env.BLOCKFROST_MAINNET  //process.env.BLOCKFROST_API_KEY ? process.env.BLOCKFROST_API_KEY : ''
+  let network : Network = process.env.NETWORK === '0' ? 'Testnet' : 'Mainnet'
   const { Lucid, Blockfrost } = await import('lucid-cardano')
     await Lucid.initialize(
-        new Blockfrost('https://cardano-testnet.blockfrost.io/api/v0', 'testnetRvOtxC8BHnZXiBvdeM9b3mLbi8KQPwzA'),
-        'Testnet'
+        new Blockfrost(networkEndpoint, blockfrostApiKey),
+        network
     )
     await Lucid.selectWallet(walletName as WalletProvider)
     const walletAddr = await Lucid.wallet.address()
-    
+    let assets = {...mintAssets}; assets['lovelace']=BigInt(1600000);
     const tx = await Tx.new()
               .attachMetadataWithConversion(721, metadata)
               .attachMintingPolicy({
@@ -126,7 +132,9 @@ const mintTx = async (policyScript: NativeScript, metadata: any, mintAssets: Ass
               })
               .mintAssets(mintAssets)
               .addSigner(walletAddr)
+              .validTo(Date.now()+parseInt(mint.reservationTime)*60000)
               .payToAddress(mint.address, {['lovelace']: BigInt(Number(mint.nftAdaPrice) * 1000000)})
+              .payToAddress(walletAddr, assets)
               .complete()
 
     return tx;

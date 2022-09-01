@@ -27,7 +27,6 @@ type SubmitReqBody = {
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const submitReqBody: SubmitReqBody = req.body
-  // console.log(req.body)
   if (!submitReqBody || !submitReqBody.txHex || !submitReqBody.signatureHex) return res.status(400).json({ error: `correct request body not provided` })
 
   const { collection } = req.query;
@@ -59,7 +58,6 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
   const signatureList = signatureSet.vkeys()
 
   if (!signatureList) return { error: "Signature invalid" }
-  console.log("We've made it this far.")
 
   let { serverAdrrInputValue, otherInputValue, outputValueToServerAddr, outputValueToOtherAddr, serverAdrrInputHashes } = await decodeTx(transaction, mint.address)
 
@@ -81,10 +79,10 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
   const transaction_body = transaction.body()
 
   const txBodyHash = C.hash_transaction(transaction_body)
-
   const serverKey = process.env.SERVER_PRIVATE_KEY
 
-  const sKey = C.PrivateKey.from_extended_bytes(Buffer.from(serverKey, 'hex'))
+  const sKey = C.PrivateKey.from_extended_bytes(await Buffer.from(serverKey, 'hex'))
+
 
   const witness = C.make_vkey_witness(
     txBodyHash,
@@ -109,8 +107,6 @@ const submitJob = async (transactionHex: string, signatureHex: string, collectio
   }
 
   if (!resS || resS.toString().length !== 64) {
-    console.log('Submit res:')
-    console.log(resS)
     return { error: resS }
   } else {
 
@@ -126,7 +122,6 @@ const validateTx: (
   serverAdrrInputHashes: string[],
   collection: Collection
 ) => Promise<{ isValid: boolean, nftNames: string[] }> = async (serverAdrrInputValue: Assets, outputValueToServerAddr: Assets, outputValueToOtherAddr: Assets, serverAdrrInputHashes: string[], collection: Collection) => {
-  console.log(serverAdrrInputHashes)
   if (serverAdrrInputHashes && serverAdrrInputHashes.length > 0) return { isValid: false, nftNames: [] }
 
   const nftPrice = Number(mintinfo.nftAdaPrice)
@@ -147,8 +142,6 @@ const validateTx: (
   })
 
   if (!nftNames || (mintCount < BigInt(nftNames.length))) {
-    // console.log('Invalid mint request')
-    // return false
     throw 'Invalid mint request'
   }
 
@@ -179,11 +172,9 @@ const validateTx: (
     }
     const readyToSubmit = cis.filter(ci => ci.submitedTx === undefined || ci.submitedTx === null)
     if (readyToSubmit && readyToSubmit.length > 0) {
-      console.log('Pre adding couint')
       indexesToUpdateCount += 1
     }
     else {
-      console.log('Pre false return')
       return { isValid: false, nftNames }
     }
   }

@@ -1,11 +1,14 @@
 import { MintItemProps } from "./types"
 
-const mint = {
-    "address": "addr_test1qrjn6gut4js36nxpqjupa4shwrl35dpc2k24fevx9s6ph3h9853cht9pr4xvzp9crmtpwu8lrg6rs4v42njcvtp5r0rqq5y2ef",
-    "policyId": "7d1731bc58c51478710609f3d40d5500b4419521f6d4f0803e7950cc",
-    "script": "8201818200581ce53d238baca11d4cc104b81ed61770ff1a3438559554e5862c341bc6",
-    "paymentKeyHash": "e53d238baca11d4cc104b81ed61770ff1a3438559554e5862c341bc6",
-    "nftAdaPrice": "15"
+const mint = 
+{
+    "address": "addr_test1qzuq388jjx50yuvagjmlj6mlz3vc883hwantjycpkj359vdcpzw09ydg7fce639hl94h79zesw0rwamxhyfsrd9rg2csrlzqpw",
+    "policyId": "955b1c9393739174e3a477ed24244dbad1a0c99f817e788c6efe07aa",
+    "script": "82018282051a04f2d8918200581cb8089cf291a8f2719d44b7f96b7f1459839e377766b91301b4a342b1",
+    "paymentKeyHash": "b8089cf291a8f2719d44b7f96b7f1459839e377766b91301b4a342b1",
+    "nftAdaPrice": "3",
+    "reservationTime":"20"  //reservation time in minutes
+
 }
 
 export default mint
